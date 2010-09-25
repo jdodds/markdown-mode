@@ -1366,7 +1366,8 @@ Calls `markdown-cycle' with argument t."
 ;;; Commands ==================================================================
 
 (defun markdown (from-file)
-  "Run markdown on the current buffer and preview the output in another buffer."
+  "Run markdown on the current buffer and preview the output in another buffer.
+If FROM-FILE is non-nil, run markdown on the file the current buffer is visiting."
   (interactive "P")
   (if from-file
       (if buffer-file-name
@@ -1404,7 +1405,8 @@ Calls `markdown-cycle' with argument t."
               "</html>\n"))))
 
 (defun markdown-preview (from-file)
-  "Run markdown on the current buffer and preview the output in a browser."
+  "Run markdown on the current buffer and preview the output in a browser.
+If FROM-FILE is non-nil, run markdown on the file the current buffer is visiting."
   (interactive "P")
   (catch 'up
     (markdown from-file)
