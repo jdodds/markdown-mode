@@ -1365,14 +1365,21 @@ Calls `markdown-cycle' with argument t."
 
 ;;; Commands ==================================================================
 
-(defun markdown ()
+(defun markdown (from-file)
   "Run markdown on the current buffer and preview the output in another buffer."
-  (interactive)
-  (if (and (boundp 'transient-mark-mode) transient-mark-mode mark-active)
-      (shell-command-on-region (region-beginning) (region-end) markdown-command
-                               "*markdown-output*" nil)
-    (shell-command-on-region (point-min) (point-max) markdown-command
-                             "*markdown-output*" nil))
+  (interactive "P")
+  (if from-file
+      (if buffer-file-name
+          (shell-command (concat markdown-command " " buffer-file-name)
+                         "*markdown-output*" nil)
+        (progn
+          (message "You're not visiting a file!")
+          (throw 'up t)))
+    (if (and (boundp 'transient-mark-mode) transient-mark-mode mark-active)
+        (shell-command-on-region (region-beginning) (region-end) markdown-command
+                                 "*markdown-output*" nil)
+      (shell-command-on-region (point-min) (point-max) markdown-command
+                               "*markdown-output*" nil)))
   (let (title)
     (setq title (buffer-name))
     (save-excursion
@@ -1396,11 +1403,12 @@ Calls `markdown-cycle' with argument t."
               "</body>\n"
               "</html>\n"))))
 
-(defun markdown-preview ()
+(defun markdown-preview (from-file)
   "Run markdown on the current buffer and preview the output in a browser."
-  (interactive)
-  (markdown)
-  (browse-url-of-buffer "*markdown-output*"))
+  (interactive "P")
+  (catch 'up
+    (markdown from-file)
+    (browse-url-of-buffer "*markdown-output*")))
 
 
 ;;; Miscellaneous =============================================================
